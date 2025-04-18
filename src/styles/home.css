@@ -1,0 +1,68 @@
+.home-container {
+  padding: 30px; /* 原来的页面边距 */
+}
+
+/* 修改为 */
+.home-container {
+  padding: 16px 20px; /* 减小页面边距 */
+}
+
+/* 找到容器样式 */
+.feature-cards-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 原来可能是3列 */
+  gap: 20px; /* 原来的间隙 */
+}
+
+/* 修改为 */
+.feature-cards-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 改为4列，显示更紧凑 */
+  gap: 12px; /* 减小间隙 */
+}
+
+/* 添加或修改媒体查询 */
+@media (max-width: 768px) {
+  .feature-cards-container {
+    grid-template-columns: repeat(2, 1fr); /* 平板上显示2列 */
+    gap: 10px; /* 减小间隙 */
+  }
+  
+  .home-container {
+    padding: 14px; /* 减小页面边距 */
+  }
+  
+  .feature-card-title {
+    font-size: 15px; /* 减小标题字体 */
+    margin-bottom: 5px;
+  }
+  
+  .feature-card-description {
+    font-size: 13px; /* 减小描述文字大小 */
+  }
+}
+
+@media (max-width: 480px) {
+  .feature-cards-container {
+    grid-template-columns: 1fr; /* 手机上显示1列 */
+    gap: 8px; /* 进一步减小间隙 */
+  }
+  
+  .feature-card {
+    padding: 10px; /* 手机上进一步减小内边距 */
+    margin: 6px 0; /* 调整垂直间距 */
+  }
+  
+  .home-container {
+    padding: 10px; /* 减小页面边距 */
+  }
+  
+  .feature-card-title {
+    font-size: 14px; /* 进一步减小标题字体 */
+  }
+  
+  .feature-card-description {
+    font-size: 12px; /* 进一步减小描述文字大小 */
+    line-height: 1.4; /* 调整行高 */
+  }
+}

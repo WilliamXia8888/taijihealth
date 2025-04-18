@@ -1,0 +1,601 @@
+/* 移动端响应式布局优化 */
+
+/* 设备检测 - 确保正确识别移动设备 */
+@media only screen and (max-width: 768px), only screen and (max-device-width: 768px), only screen and (hover: none) and (pointer: coarse) {
+  html, body {
+    -webkit-text-size-adjust: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* 强制使用移动端布局，防止自动缩放 */
+  meta[name="viewport"] {
+    content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+  }
+  
+  /* 强制应用移动端样式 */
+  body {
+    min-width: unset !important;
+    max-width: 100vw !important;
+  }
+}
+
+/* 移动设备类样式 */
+html.mobile-device {
+  font-size: 14px; /* 移动设备基础字体大小调整 */
+}
+
+/* 自动检测移动设备并应用样式 */
+@media (hover: none) and (pointer: coarse) {
+  html:not(.mobile-device) {
+    font-size: 14px;
+  }
+  
+  body {
+    touch-action: manipulation; /* 优化触摸操作 */
+    overflow-x: hidden; /* 防止水平滚动 */
+  }
+}
+
+/* 基础响应式布局 - 适用于所有页面 */
+@media (max-width: 768px) {
+  /* 容器布局优化 */
+  .app-container {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* 主内容区域优化 */
+  .app-main {
+    padding: 12px 10px;
+  }
+  
+  /* 网格布局优化 - 将水平排列改为垂直排列 */
+  .MuiGrid-container {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  /* 调整网格项目宽度为100% */
+  .MuiGrid-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    padding: 8px !important;
+  }
+  
+  /* 卡片容器垂直排列 */
+  .card-container {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  /* 卡片宽度调整 */
+  .MuiCard-root, .card {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 表单元素宽度调整 */
+  .MuiTextField-root, .MuiFormControl-root {
+    width: 100% !important;
+  }
+  
+  /* 按钮组垂直排列 */
+  .MuiButtonGroup-root {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  /* 对话框宽度调整 */
+  .MuiDialog-paper {
+    width: 95% !important;
+    max-width: 95% !important;
+    margin: 10px !important;
+  }
+  
+  /* 导航菜单优化 */
+  .MuiAppBar-root .MuiToolbar-root {
+    padding: 0 10px !important;
+  }
+}
+
+/* 小屏幕手机特别优化 */
+@media (max-width: 480px) {
+  /* 字体大小调整 */
+  body {
+    font-size: 14px;
+  }
+  
+  /* 标题大小调整 */
+  .MuiTypography-h4 {
+    font-size: 1.5rem !important;
+  }
+  
+  .MuiTypography-h5 {
+    font-size: 1.25rem !important;
+  }
+  
+  .MuiTypography-h6 {
+    font-size: 1.1rem !important;
+  }
+  
+  /* 按钮大小调整 */
+  .MuiButton-root {
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* 内边距调整 */
+  .MuiContainer-root {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* 确保所有容器垂直排列 */
+  .MuiBox-root {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  /* 确保所有网格项目垂直排列 */
+  .MuiGrid-container {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* 确保所有卡片垂直排列 */
+  .MuiCard-root {
+    margin-bottom: 12px !important;
+  }
+  
+  /* 专家面板布局优化 */
+  .expert-stats-container {
+    flex-direction: column !important;
+  }
+  
+  .expert-stat-card {
+    width: 100% !important;
+    margin-bottom: 10px !important;
+  }
+  
+  /* 表格响应式处理 */
+  .MuiTable-root {
+    display: block !important;
+    overflow-x: auto !important;
+  }
+}
+
+/* 特定页面组件优化 */
+
+/* 首页特别优化 */
+@media (max-width: 768px) {
+  /* 首页功能卡片垂直排列 */
+  .home-features-grid .MuiGrid-item {
+    padding: 8px 0 !important;
+    width: 100% !important;
+  }
+  
+  /* 首页标题调整 */
+  .home-title {
+    font-size: 1.75rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* 首页功能区域垂直排列 */
+  .home-features-container {
+    flex-direction: column !important;
+  }
+  
+  /* 首页按钮组垂直排列 */
+  .home-action-buttons {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .home-action-buttons .MuiButton-root {
+    margin: 5px 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* 专家面板特别优化 */
+@media (max-width: 768px) {
+  /* 专家统计卡片垂直排列 */
+  .expert-dashboard-container {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .expert-dashboard-item {
+    width: 100% !important;
+    margin-bottom: 12px !important;
+  }
+  
+  /* 专家列表垂直排列 */
+  .expert-list-container {
+    flex-direction: column !important;
+  }
+  
+  .expert-card {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+/* 登录页面特别优化 */
+@media (max-width: 768px) {
+  .login-container {
+    width: 100% !important;
+    padding: 16px !important;
+    margin: 0 auto !important;
+  }
+  
+  .login-form {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* 登录表单元素优化 */
+  .login-form .MuiTextField-root,
+  .login-form .MuiFormControl-root,
+  .login-form .MuiButton-root {
+    width: 100% !important;
+    margin-bottom: 12px !important;
+  }
+  
+  /* 登录页面标签页优化 */
+  .login-tabs .MuiTab-root {
+    padding: 8px 12px !important;
+    font-size: 0.9rem !important;
+  }
+  
+  /* 登录页面底部链接优化 */
+  .login-links {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .login-links .MuiButton-root {
+    margin: 5px 0 !important;
+  }
+}
+
+/* 诊断页面特别优化 */
+@media (max-width: 768px) {
+  .diagnosis-container {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .diagnosis-form, .diagnosis-result {
+    width: 100% !important;
+    margin: 0 0 16px 0 !important;
+  }
+  
+  /* 诊断表单垂直排列 */
+  .diagnosis-form .MuiGrid-container {
+    flex-direction: column !important;
+  }
+  
+  .diagnosis-form .MuiGrid-item {
+    width: 100% !important;
+    padding: 8px 0 !important;
+  }
+  
+  /* 诊断结果垂直排列 */
+  .diagnosis-result-container {
+    flex-direction: column !important;
+  }
+  
+  .diagnosis-chart-container {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+}
+
+/* 咨询页面特别优化 */
+@media (max-width: 768px) {
+  /* 整体容器垂直排列 */
+  .consultation-container {
+    flex-direction: column !important;
+  }
+  
+  /* 专家列表和聊天容器宽度调整 */
+  .expert-list, .chat-container {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* 专家卡片间距调整 */
+  .expert-card {
+    margin-bottom: 12px !important;
+  }
+  
+  /* 专家详情对话框优化 */
+  .MuiDialog-paper {
+    width: 95% !important;
+    margin: 10px auto !important;
+  }
+  
+  /* 专家详情表单垂直排列 */
+  .consultation-form-container .MuiGrid-container {
+    flex-direction: column !important;
+  }
+  
+  .consultation-form-container .MuiGrid-item {
+    width: 100% !important;
+    padding: 8px 0 !important;
+  }
+  
+  /* 聊天界面在手机端全屏显示 */
+  .chat-drawer {
+    width: 100% !important;
+  }
+  
+  /* 视频通话界面优化 */
+  .video-container {
+    flex-direction: column !important;
+  }
+  
+  .video-container .local-video,
+  .video-container .remote-video {
+    width: 100% !important;
+    height: auto !important;
+    margin-bottom: 10px !important;
+  }
+
+  
+  /* 专家卡片内容垂直排列 */
+  .expert-card-content {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 10px !important;
+  }
+  
+  /* 专家咨询页面垂直排列 */
+  .consultation-container {
+    flex-direction: column !important;
+  }
+  
+  .expert-filter-container {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 专家在线状态指示器优化 */
+  .expert-online-status {
+    position: absolute !important;
+    top: 10px !important;
+    right: 10px !important;
+    z-index: 2 !important;
+  }
+  
+  /* 专家在线状态文本 */
+  .expert-status-text {
+    font-size: 0.75rem !important;
+    margin-left: 4px !important;
+  }
+  
+  /* 专家卡片操作按钮垂直排列 */
+  .expert-card-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .expert-card-actions .MuiButton-root {
+    margin: 4px 0 !important;
+    width: 100% !important;
+  }
+  
+  /* 聊天界面消息列表优化 */
+  .chat-messages-container {
+    max-height: 60vh !important;
+    width: 100% !important;
+  }
+  
+  /* 聊天输入框优化 */
+  .chat-input-container {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .chat-input-container .MuiTextField-root {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* 聊天消息气泡宽度优化 */
+  .chat-message-bubble {
+    max-width: 85% !important;
+  }
+
+  
+  /* 专家列表网格布局优化 */
+  .expert-list .MuiGrid-container {
+    flex-direction: column !important;
+  }
+  
+  .expert-list .MuiGrid-item {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+  }
+  
+  /* 会员权益说明布局优化 */
+  .expert-list .MuiPaper-root .MuiGrid-container {
+    flex-direction: column !important;
+  }
+  
+  /* 聊天界面优化 */
+  .chat-interface-container {
+    height: auto !important;
+    min-height: 400px !important;
+    width: 100% !important;
+    flex-direction: column !important;
+  }
+  
+  /* 聊天控制按钮优化 */
+  .chat-controls {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+  }
+  
+  .chat-controls .MuiButton-root,
+  .chat-controls .MuiIconButton-root {
+    margin: 4px !important;
+  }
+}
+
+/* 太极养生页面优化 */
+@media (max-width: 768px) {
+  /* 太极养生卡片垂直排列 */
+  .taiji-exercises-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .exercise-card {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 太极养生详情页垂直排列 */
+  .exercise-detail-container {
+    flex-direction: column !important;
+  }
+  
+  .exercise-video-container {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .exercise-steps-container {
+    width: 100% !important;
+  }
+}
+
+/* 健康知识页面优化 */
+@media (max-width: 768px) {
+  /* 知识卡片垂直排列 */
+  .knowledge-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .knowledge-card {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 知识详情页垂直排列 */
+  .knowledge-detail-container {
+    flex-direction: column !important;
+  }
+  
+  .knowledge-content {
+    width: 100% !important;
+  }
+  
+  .knowledge-sidebar {
+    width: 100% !important;
+    margin-top: 16px !important;
+  }
+}
+
+/* 健康论坛页面优化 */
+@media (max-width: 768px) {
+  /* 论坛帖子垂直排列 */
+  .forum-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .forum-post {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 论坛详情页垂直排列 */
+  .forum-detail-container {
+    flex-direction: column !important;
+  }
+  
+  .forum-content {
+    width: 100% !important;
+  }
+  
+  .forum-sidebar {
+    width: 100% !important;
+    margin-top: 16px !important;
+  }
+}
+
+/* 健康档案页面优化 */
+@media (max-width: 768px) {
+  /* 档案卡片垂直排列 */
+  .health-records-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .record-card {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 档案详情页垂直排列 */
+  .record-detail-container {
+    flex-direction: column !important;
+  }
+  
+  .record-chart-container {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .record-data-container {
+    width: 100% !important;
+  }
+}
+
+/* 积分管理页面优化 */
+@media (max-width: 768px) {
+  /* 积分卡片垂直排列 */
+  .points-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+  
+  .points-card {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  /* 积分历史垂直排列 */
+  .points-history-container {
+    flex-direction: column !important;
+  }
+  
+  .points-chart {
+    width: 100% !important;
+    margin-bottom: 16px !important;
+  }
+  
+  .points-table-container {
+    width: 100% !important;
+    overflow-x: auto !important;
+  }
+}
