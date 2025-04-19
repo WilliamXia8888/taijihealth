@@ -1,5 +1,8 @@
 {
+  "homepage": "https://你的用户名.github.io/taijihealth",
   "scripts": {
+    "predeploy": "npm run build",
+   "deploy": "gh-pages -d build",
     "clean": "rimraf ./build",
     "start": "set PORT=5000 && react-scripts start",
     "dev": "react-scripts start",
@@ -7,6 +10,7 @@
     "start:ngrok": "ngrok http 5000 --log=stdout --authtoken=2ug2MljamE6M0EtinSadqJ5urS5_7mGEGgSdt76t94VuMPpgU"
   },
   "devDependencies": {
+    "gh-pages": "^6.3.0",
     "rimraf": "^5.0.5"
   },
   "dependencies": {
