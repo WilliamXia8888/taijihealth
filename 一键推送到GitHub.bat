@@ -23,6 +23,12 @@ git commit -m "%commit_msg%"
 :: 推送代码
 echo [4/4] 正在推送到GitHub...
 echo 正在使用优化参数推送，请耐心等待...
+
+:: 设置超时环境变量以便更好地诊断问题
+set GIT_TRACE=1
+set GIT_CURL_VERBOSE=1
+
+:: 执行推送命令
 git push -u origin master --verbose
 
 echo ============================
