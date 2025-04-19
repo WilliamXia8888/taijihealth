@@ -1,8 +1,8 @@
 {
-  "homepage": "https://你的用户名.github.io/taijihealth",
+  "homepage": "https://WilliamXia8888.github.io/taijihealth",
   "scripts": {
     "predeploy": "npm run build",
-   "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d build",
     "clean": "rimraf ./build",
     "start": "set PORT=5000 && react-scripts start",
     "dev": "react-scripts start",
