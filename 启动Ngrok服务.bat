@@ -7,7 +7,10 @@ echo.
 
 :: 设置工作目录
 cd /d "%~dp0"
-
+@echo off
+   echo 正在启动Ngrok服务...
+   node ngrok-start.js
+   pause
 :: 检查Ngrok是否安装
 where ngrok >nul 2>nul
 if %ERRORLEVEL% neq 0 (
