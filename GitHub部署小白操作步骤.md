@@ -134,6 +134,9 @@ git config --global user.email "你的GitHub邮箱"
 2. 提交更改：
    ```
    git commit -m "初始提交：太极健康项目"
+   
+   配置Git使用代理：
+   git config --global http.proxy http://proxyserver:port
    ```
 
 3. 关联远程仓库（替换为你的GitHub用户名）：
