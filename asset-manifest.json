@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/taijihealth/static/css/main.6007998f.css",
+    "main.js": "/taijihealth/static/js/main.8f813524.js",
+    "static/media/notification.mp3": "/taijihealth/static/media/notification.f652cade429aae96aa54.mp3",
+    "index.html": "/taijihealth/index.html",
+    "main.6007998f.css.map": "/taijihealth/static/css/main.6007998f.css.map",
+    "main.8f813524.js.map": "/taijihealth/static/js/main.8f813524.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6007998f.css",
+    "static/js/main.8f813524.js"
+  ]
+}
