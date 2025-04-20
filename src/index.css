@@ -24,11 +24,28 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
   overflow-x: hidden; /* 防止水平滚动 */
+  /* 移除可能导致内容区域隐藏的display和place-items属性 */
+}
+
+/* 确保内容区域在所有设备上正确显示 */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: block;
+}
+
+.app-main {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  width: 100% !important;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 h1 {

@@ -134,9 +134,28 @@ app.post('/api/diagnose', async (req, res) => {
   }
 });
 
+// 移动设备检测函数
+function isMobileDevice(userAgent) {
+  return /mobile|android|iphone|ipad|ipod/i.test(userAgent);
+}
+
 // 处理SPA路由 - 使用Express推荐的方式处理所有路由
 app.get('/', (req, res) => {
+  const userAgent = req.headers['user-agent'] || '';
+  
+  // 检测是否为移动设备
+  if (isMobileDevice(userAgent)) {
+    console.log(`检测到移动设备访问: ${userAgent}`);
+    // 重定向到移动设备专用页面
+    return res.sendFile(path.join(__dirname, '../build', 'mobile.html'));
+  }
+  
   res.sendFile(path.join(__dirname, '../build', 'index.html'));
+});
+
+// 添加移动设备专用页面路由
+app.get('/mobile.html', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build', 'mobile.html'));
 });
 
 // 处理其他所有前端路由

@@ -11,6 +11,9 @@ class SocketService {
     this.callbacks = {};
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
+    this.hasShownWarning = false;
+    this.hasTriedBackupPorts = false;
+    this.hasResolvedPromise = false;
   }
 
   /**
@@ -30,30 +33,58 @@ class SocketService {
         // 设置重试计数器
         this.retryCount = 0;
         
-        // 检查信令服务器是否可用
-        this.checkServerAvailability(serverUrl);
-        
+        // 检测是否为移动设备
+        const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         // 检测是否为本地开发环境，如果是则直接使用localhost
         const isLocalhost = window.location.hostname === 'localhost' || 
                            window.location.hostname === '127.0.0.1';
         
-        // 本地开发环境使用固定地址
-        const finalServerUrl = isLocalhost ? 'http://localhost:5001' : serverUrl;
+        // 检测是否为Ngrok环境
+        const isNgrok = window.location.hostname.includes('ngrok');
         
-        console.log(`尝试连接到信令服务器: ${finalServerUrl}`);
+        // 根据环境确定正确的连接URL
+        let finalServerUrl;
+        if (isLocalhost) {
+          // 尝试多个可能的端口
+          const possiblePorts = ['5001', '3001', '5000'];
+          finalServerUrl = `http://localhost:${possiblePorts[0]}`;
+          console.log(`尝试连接到信令服务器: ${finalServerUrl} (可能的端口: ${possiblePorts.join(', ')})`);
+        } else if (isNgrok) {
+          // Ngrok环境下使用相同的主机名，不指定端口
+          // Ngrok通常会将所有流量转发到同一个端口
+          finalServerUrl = `${window.location.protocol}//${window.location.hostname}`;
+          console.log(`检测到Ngrok环境，使用特殊连接配置: ${finalServerUrl}`);
+        } else {
+          finalServerUrl = serverUrl;
+          console.log(`尝试连接到信令服务器: ${finalServerUrl}`);
+        }
         
-        // 检查信令服务器是否可用
+        // 检查信令服务器是否可用，但不阻塞应用加载
         this.checkServerAvailability(finalServerUrl);
         
-         // 创建新的Socket.io连接
-   const serverUrl = process.env.REACT_APP_SIGNAL_SERVER || finalServerUrl;
-   this.socket = io(serverUrl, {
-     reconnectionDelayMax: 10000,
-     reconnectionAttempts: this.maxReconnectAttempts,
-     timeout: 20000,
-     transports: ['polling', 'websocket'], // 先尝试polling，然后尝试websocket
-   });
+        // 创建新的Socket.io连接
+        const socketUrl = process.env.REACT_APP_SIGNAL_SERVER || finalServerUrl;
+        
+        try {
+          // 检查是否为移动设备通过Ngrok访问
+          const isMobileNgrok = isMobile && isNgrok;
+          
+          this.socket = io(socketUrl, {
+            reconnectionDelayMax: 10000,
+            reconnectionAttempts: this.maxReconnectAttempts,
+            timeout: isMobileNgrok ? 30000 : 20000, // 移动设备通过Ngrok访问时增加超时时间
+            transports: isMobileNgrok ? ['polling'] : ['polling', 'websocket'], // 移动设备通过Ngrok访问时优先使用polling
+            autoConnect: false, // 先不自动连接，等配置完成后手动连接
+            forceNew: true, // 强制创建新连接
+            withCredentials: false // 禁用跨域凭证，解决CORS问题
+          });
+        } catch (error) {
+          console.error('创建Socket.io实例失败:', error);
+          // 即使创建Socket实例失败，也返回false而不是抛出错误
+          resolve(false);
+          return;
+        }
         
         // 添加路径前缀，确保Socket.io能正确连接
         if (this.socket.io.uri.indexOf('/socket.io') === -1) {
@@ -65,6 +96,16 @@ class SocketService {
           console.error("Socket.io连接错误:", error);
           // 不立即reject，允许重试机制工作
         });
+        
+        // 手动连接，确保所有事件处理器都已设置
+        try {
+          this.socket.connect();
+        } catch (error) {
+          console.error('Socket连接失败:', error);
+          // 即使连接失败，也返回false而不是抛出错误
+          resolve(false);
+          return;
+        }
         
         // 添加传输错误处理
         this.socket.io.engine.on("transport_error", (error) => {
@@ -189,12 +230,16 @@ class SocketService {
             this.callbacks.onReconnectFailed();
           }
           
-          // 显示友好的错误提示
-          toast.warning('服务器连接失败，部分功能可能不可用');
+          // 显示友好的错误提示，但避免重复显示
+          if (!this.hasShownWarning) {
+            toast.warning('服务器连接失败，部分功能可能不可用');
+            this.hasShownWarning = true;
+          }
           
           // 不阻止应用继续运行
-          if (!this.isConnected) {
-            reject(new Error('WebSocket重连失败'));
+          if (!this.isConnected && !this.hasResolvedPromise) {
+            this.hasResolvedPromise = true;
+            resolve(false);
           }
         });
         
@@ -208,8 +253,20 @@ class SocketService {
           // 显示友好的错误提示，但不阻止应用运行
           console.warn('信令服务器连接失败，视频通话功能可能不可用');
           
+          // 只显示一次警告，避免多次弹出
+          if (!this.hasShownWarning) {
+            toast.warning('信令服务器连接失败，视频通话功能不可用');
+            this.hasShownWarning = true;
+          }
+          
           if (this.callbacks.onConnectError) {
             this.callbacks.onConnectError(error);
+          }
+          
+          // 即使连接失败，也允许应用继续运行
+          if (!this.isConnected && !this.hasResolvedPromise) {
+            this.hasResolvedPromise = true;
+            resolve(false);
           }
         });
 
@@ -224,12 +281,16 @@ class SocketService {
             this.callbacks.onError(error);
           }
           
-          // 显示友好的错误提示
-          toast.error('网络连接错误，部分功能可能不可用');
+          // 显示友好的错误提示，但避免重复显示
+          if (!this.hasShownWarning) {
+            toast.error('网络连接错误，部分功能可能不可用');
+            this.hasShownWarning = true;
+          }
           
           // 不立即reject，允许应用继续运行
-          if (!this.isConnected) {
-            reject(error);
+          if (!this.isConnected && !this.hasResolvedPromise) {
+            this.hasResolvedPromise = true;
+            resolve(false);
           }
         });
 
@@ -279,21 +340,48 @@ class SocketService {
    * @private
    */
   checkServerAvailability(serverUrl) {
-    // 使用fetch API检查服务器状态
-    fetch(`${serverUrl}/signal-status`)
+    // 使用fetch API检查服务器状态，设置超时以避免长时间等待
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
+    
+    fetch(`${serverUrl}/signal-status`, { signal: controller.signal })
       .then(response => {
+        clearTimeout(timeoutId);
         if (response.ok) {
           console.log('信令服务器状态检查成功');
         } else {
           console.warn('信令服务器状态检查失败，服务器可能不可用');
-          toast.warning('信令服务器连接失败，视频通话功能可能不可用');
+          // 只显示一次警告，避免多次弹出
+          if (!this.hasShownWarning) {
+            toast.warning('信令服务器连接失败，视频通话功能不可用');
+            this.hasShownWarning = true;
+          }
         }
       })
       .catch(error => {
+        clearTimeout(timeoutId);
         console.warn('信令服务器状态检查失败:', error);
         // 尝试启动本地服务器的提示
         console.info('提示: 请确保已启动后端服务器，可以运行 "node server.js" 启动服务器');
-        toast.warning('信令服务器连接失败，视频通话功能不可用');
+        
+        // 只显示一次警告，避免多次弹出
+        if (!this.hasShownWarning) {
+          toast.warning('信令服务器连接失败，视频通话功能不可用');
+          this.hasShownWarning = true;
+        }
+        
+        // 尝试连接到备用端口
+        if (serverUrl.includes('localhost') && !this.hasTriedBackupPorts) {
+          this.hasTriedBackupPorts = true;
+          const backupPorts = ['3001', '5000'];
+          console.log(`尝试连接到备用端口: ${backupPorts.join(', ')}`);
+          
+          // 依次尝试备用端口
+          backupPorts.forEach(port => {
+            const backupUrl = `http://localhost:${port}`;
+            setTimeout(() => this.checkServerAvailability(backupUrl), 1000);
+          });
+        }
       });
   }
 
@@ -330,6 +418,9 @@ class SocketService {
       this.socket = null;
       this.isConnected = false;
       window.socket = null;
+      
+      // 重置连接状态标志，以便下次连接尝试能正常工作
+      this.hasResolvedPromise = false;
     }
   }
 }

@@ -57,6 +57,32 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'build')));
 
+// 移动设备检测中间件
+app.use((req, res, next) => {
+  const userAgent = req.headers['user-agent'] || '';
+  const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(userAgent);
+  
+  // 将移动设备标志添加到请求对象中
+  req.isMobile = isMobile;
+  next();
+});
+
+// 为移动设备提供优化版本
+app.get('/', (req, res) => {
+  if (req.isMobile) {
+    console.log('检测到移动设备访问，提供mobile.html');
+    res.sendFile(path.join(__dirname, 'build', 'mobile.html'));
+  } else {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  }
+});
+
+// 添加专门的移动端访问路由
+app.get('/mobile.html', (req, res) => {
+  console.log('直接访问mobile.html');
+  res.sendFile(path.join(__dirname, 'build', 'mobile.html'));
+});
+
 // 添加API状态检查端点
 app.get('/api/status', (req, res) => {
   res.status(200).json({ status: 'ok', message: '服务器正常运行' });

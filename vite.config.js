@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // 为GitHub Pages部署添加基础路径配置
-  base: process.env.NODE_ENV === 'production' ? '/taijihealth/' : '/',
+  // 基础路径配置
+  base: '/',
   // 配置构建输出目录
   build: {
     outDir: 'build',

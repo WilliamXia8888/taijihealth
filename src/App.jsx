@@ -59,9 +59,15 @@ function NavigationWrapper() {
 function App() {
   // 检测是否为移动设备
   useEffect(() => {
-    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // 更全面的移动设备检测
+    const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(navigator.userAgent) || 
+                  (window.innerWidth <= 768) || 
+                  ('ontouchstart' in window) || 
+                  (navigator.maxTouchPoints > 0);
     if (isMobile) {
       document.documentElement.classList.add('mobile-device');
+      // 强制应用移动端样式
+      document.querySelector('meta[name="viewport"]')?.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
       console.log('检测到移动设备，已应用移动端样式');
     }
   }, []);
@@ -71,17 +77,37 @@ function App() {
     // 尝试连接WebSocket服务
     const connectSocket = async () => {
       try {
+        // 确保应用内容始终可见，无论WebSocket连接是否成功
+        document.querySelector('.app-main').style.display = 'block';
+        document.querySelector('.app-main').style.visibility = 'visible';
+        document.querySelector('.app-main').style.opacity = '1';
+        
         // 获取当前主机和端口，确保在不同环境下都能正确连接
         const protocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
         const host = window.location.hostname;
-        // 使用固定端口5001，确保连接到正确的信令服务器
-        const port = '5001';
         
         // 检测是否为本地开发环境
         const isLocalhost = host === 'localhost' || host === '127.0.0.1';
         
-        // 构建服务器URL，本地开发环境使用固定地址
-        const serverUrl = isLocalhost ? 'http://localhost:5001' : `${protocol}//${host}:${port}`;
+        // 检测是否为Ngrok环境
+        const isNgrok = host.includes('ngrok');
+        
+        // 根据环境确定正确的端口和连接方式
+        let port = '5001';
+        let serverUrl;
+        
+        if (isLocalhost) {
+          // 本地开发环境使用固定地址
+          serverUrl = 'http://localhost:5001';
+        } else if (isNgrok) {
+          // Ngrok环境下使用相同的主机名但不同的路径
+          // 注意：Ngrok通常会将所有流量转发到同一个端口
+          serverUrl = `${protocol}//${host}`;
+          console.log('检测到Ngrok环境，使用特殊连接配置');
+        } else {
+          // 其他环境
+          serverUrl = `${protocol}//${host}:${port}`;
+        }
         
         console.log(`尝试连接WebSocket服务: ${serverUrl}`);
         
@@ -115,6 +141,11 @@ function App() {
         if (!connected) {
           console.error('WebSocket服务初始化失败，已达到最大重试次数');
           console.warn('应用将以有限功能模式运行，视频通话和实时通讯功能不可用');
+          // 即使WebSocket连接失败，应用仍然可以继续运行
+          // 移动设备上显示友好提示
+          if (isMobile) {
+            toast.info('部分实时功能可能不可用，但您仍可浏览大部分内容');
+          }
         } else {
           console.log('WebSocket服务初始化成功');
         }
@@ -126,7 +157,10 @@ function App() {
       }
     };
     
-    connectSocket();
+    // 延迟一点时间再连接WebSocket，确保UI已经渲染
+    setTimeout(() => {
+      connectSocket();
+    }, 1000);
     
     // 组件卸载时断开连接
     return () => {
@@ -134,8 +168,19 @@ function App() {
     };
   }, []);
   
+  // 检测当前环境，确定正确的basename
+  const getBasename = () => {
+    // 检查当前URL是否包含/taijihealth路径
+    const pathname = window.location.pathname;
+    if (pathname.includes('/taijihealth')) {
+      return '/taijihealth';
+    }
+    // 默认使用根路径作为basename
+    return '/';
+  };
+  
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={getBasename()}>
       <ThemeProvider>
         <AuthProvider>
           <CssBaseline />
@@ -143,13 +188,13 @@ function App() {
           <NavigationWrapper />
           <div className="app-container" id="app-container">
             <Navbar />
-            <main className="app-main">
+            <main className="app-main" style={{display: 'block', visibility: 'visible', opacity: 1}}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/diagnosis" element={<Diagnosis />} />
                 <Route path="/expert-consultation" element={<ExpertConsultation />} />
                 <Route path="/taiji-exercises" element={<TaijiExercises />} />
-          <Route path="/taiji-videos" element={<TaijiVideos />} />
+                <Route path="/taiji-videos" element={<TaijiVideos />} />
                 <Route path="/knowledge" element={<Knowledge />} />
                 <Route path="/forum" element={<Forum />} />
                 <Route path="/login" element={<Login />} />

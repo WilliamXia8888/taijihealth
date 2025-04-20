@@ -7,6 +7,7 @@
     width: 100%;
     overflow-x: hidden;
     max-width: 100vw;
+    height: 100%;
   }
   
   /* 强制使用移动端布局，防止自动缩放 */
@@ -18,12 +19,57 @@
   body {
     min-width: unset !important;
     max-width: 100vw !important;
+    min-height: 100% !important;
+    position: relative;
+  }
+  
+  /* 确保根元素显示 */
+  #root {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: 100%;
   }
 }
 
 /* 移动设备类样式 */
 html.mobile-device {
   font-size: 14px; /* 移动设备基础字体大小调整 */
+}
+
+/* 确保移动设备上内容区域正确显示 */
+html.mobile-device .app-main {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  width: 100% !important;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* 确保移动设备上app-container正确显示 */
+html.mobile-device .app-container {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+  position: relative !important;
+  z-index: 0 !important;
+}
+
+/* 确保所有设备上内容区域正确显示 */
+.app-main {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+  width: 100% !important;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* 自动检测移动设备并应用样式 */
@@ -44,6 +90,9 @@ html.mobile-device {
   .app-container {
     width: 100%;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
   
   /* 主内容区域优化 */
@@ -167,6 +216,31 @@ html.mobile-device {
   .MuiTable-root {
     display: block !important;
     overflow-x: auto !important;
+  }
+  
+  /* 确保内容区域在小屏幕设备上正确显示 */
+  .app-main {
+    padding: 8px 6px !important;
+    min-height: calc(100vh - 56px - 40px) !important;
+  }
+  
+  /* 确保导航栏在小屏幕设备上正确显示 */
+  .MuiAppBar-root {
+    height: 56px !important;
+  }
+  
+  /* 确保页脚在小屏幕设备上正确显示 */
+  .app-footer {
+    height: 40px !important;
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+  }
+  
+  /* 确保所有内容在小屏幕设备上可见 */
+  #root, .app-container, .app-main {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 

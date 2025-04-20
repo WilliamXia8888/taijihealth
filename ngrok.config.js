@@ -10,7 +10,7 @@ const CONFIG_PATH = path.join(__dirname, 'ngrok.json');
 
 // 默认配置
 const DEFAULT_CONFIG = {
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 5001, // 修改为移动优化版端口
   authtoken: process.env.NGROK_AUTH_TOKEN || '',
   region: 'ap' // 亚太地区，可选值: us, eu, au, ap, sa, jp, in
 };
@@ -87,6 +87,23 @@ async function startNgrok() {
       
       // 等待一段时间，确保本地服务已启动
       await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      // 确保至少包含移动优化版端口
+      let has5001Port = false;
+      for (const portConfig of config.ports) {
+        if (portConfig.port === 5001) {
+          has5001Port = true;
+          break;
+        }
+      }
+      
+      if (!has5001Port) {
+        config.ports.push({
+          port: 5001,
+          name: '移动优化版前端'
+        });
+        console.log('已添加移动优化版端口(5001)到Ngrok配置');
+      }
       
       // 启动多个Ngrok隧道
       for (const portConfig of config.ports) {

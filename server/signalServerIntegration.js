@@ -25,11 +25,11 @@ function integrateSignalingServer(app, server) {
       path: '/socket.io',
       serveClient: true,
       cors: {
-        origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:5000'],
+        origin: true, // 允许所有来源访问，解决Ngrok公网访问问题
         methods: ['GET', 'POST', 'OPTIONS'],
-        credentials: true
+        credentials: false // 禁用跨域凭证，解决移动设备访问问题
       },
-      transports: ['websocket', 'polling']
+      transports: ['polling', 'websocket'] // 优先使用polling，解决移动设备WebSocket连接问题
     });
     
     // 创建信令服务器实例，传入Socket.io实例
@@ -37,8 +37,10 @@ function integrateSignalingServer(app, server) {
     
     // 添加信令服务器状态路由
     app.get('/signal-status', (req, res) => {
-      // 添加CORS头，允许特定来源访问
-      res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
+      // 添加CORS头，允许所有来源访问
+      const origin = req.headers.origin;
+      // 允许所有来源访问，解决移动设备访问问题
+      res.header('Access-Control-Allow-Origin', origin || '*');
       res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type');
       res.header('Access-Control-Allow-Credentials', 'true');
@@ -51,7 +53,9 @@ function integrateSignalingServer(app, server) {
     
     // 添加CORS预检请求处理
     app.options('/signal-status', (req, res) => {
-      res.header('Access-Control-Allow-Origin', 'http://localhost:3001');
+      const origin = req.headers.origin;
+      // 允许所有来源访问，解决移动设备访问问题
+      res.header('Access-Control-Allow-Origin', origin || '*');
       res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type');
       res.header('Access-Control-Allow-Credentials', 'true');
